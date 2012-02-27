@@ -47,7 +47,7 @@ cholmod_sparse *CHOLMOD(spinv)	    /* returns the sparse solution X */
     cholmod_common *Common
 )
 {
-    int sys;
+    int sys, tmp;
     double x, z ;
     cholmod_sparse *X ;
     double *Bx, *Bz, *Xx, *Xz, *B4x, *B4z, *X4x, *X4z ;
