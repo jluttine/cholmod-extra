@@ -47,13 +47,13 @@ cholmod_sparse *CHOLMOD(spinv)	    /* returns the sparse solution X */
     cholmod_common *Common
 )
 {
-    int sys, tmp;
+    int sys;
     double x, z ;
     cholmod_sparse *X ;
     double *Bx, *Bz, *Xx, *Xz, *B4x, *B4z, *X4x, *X4z ;
     Int *Bi, *Bp, *Xp, *Xi, *Bnz ;
     Int n, nrhs, q, p, i, j, jfirst, jlast, packed, block, pend, j_n, xtype ;
-    size_t xnz, nzmax ;
+    size_t xnz, nzmax, nz ;
 
     /* ---------------------------------------------------------------------- */
     /* check inputs */
@@ -69,13 +69,17 @@ cholmod_sparse *CHOLMOD(spinv)	    /* returns the sparse solution X */
     /* ---------------------------------------------------------------------- */
 
     n = L->n;
-    nzmax = L->nzmax;
+    //nzmax = L->nzmax;
+
+    // Number of non-zero elements
+    //nz = CHOLMOD(nnz) (L, Common);
+    nz = L->nzmax;
 
     /* X is real if both L and B are real, complex/zomplex otherwise */
     xtype = L->xtype;
 
     //X = CHOLMOD(copy_sparse) (n, n, nzmax, xtype, Common) ;
-    X = CHOLMOD(spzeros) (n, n, nzmax, xtype, Common) ;
+    X = CHOLMOD(spzeros) (n, n, nz, xtype, Common) ;
     if (Common->status < CHOLMOD_OK)
     {
 	CHOLMOD(free_sparse) (&X, Common) ;
@@ -87,7 +91,7 @@ cholmod_sparse *CHOLMOD(spinv)	    /* returns the sparse solution X */
     Xx = X->x ;
     Xz = X->z ;
 
-    xnz = 0 ;
+    //xnz = 0 ;
 
     /* ---------------------------------------------------------------------- */
     /* solve in chunks of 4 columns at a time */
