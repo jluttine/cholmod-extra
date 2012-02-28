@@ -1,42 +1,29 @@
 /* ========================================================================== */
-/* === Cholesky/cholmod_spsolve ============================================= */
+/* === cholmod_spinv ======================================================== */
 /* ========================================================================== */
 
 /* -----------------------------------------------------------------------------
- * CHOLMOD/Cholesky Module.  Copyright (C) 2005-2006, Timothy A. Davis
- * The CHOLMOD/Cholesky Module is licensed under Version 2.1 of the GNU
- * Lesser General Public License.  See lesser.txt for a text of the license.
- * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
+ * CHOLMOD Extra Module.  Copyright (C) 2012, Jaakko Luttinen
+ * Extra Module is licensed under Version 3.0 of the GNU General Public License.
+ * See LICENSE for a text of the license.
  * -------------------------------------------------------------------------- */
 
-/* Given an LL' or LDL' factorization of A, solve one of the following systems:
- *
- *	Ax=b	    0: CHOLMOD_A	also applies the permutation L->Perm
- *	LDL'x=b	    1: CHOLMOD_LDLt	does not apply L->Perm
- *	LDx=b	    2: CHOLMOD_LD
- *	DL'x=b	    3: CHOLMOD_DLt
- *	Lx=b	    4: CHOLMOD_L
- *	L'x=b	    5: CHOLMOD_Lt
- *	Dx=b	    6: CHOLMOD_D
- *	x=Pb	    7: CHOLMOD_P	apply a permutation (P is L->Perm)
- *	x=P'b	    8: CHOLMOD_Pt	apply an inverse permutation
- *
- * where b and x are sparse.  If L and b are real, then x is real.  Otherwise,
- * x is complex or zomplex, depending on the Common->prefer_zomplex parameter.
- * All xtypes of x and b are supported (real, complex, and zomplex).
+/* Given an LL' or LDL' factorization of A, compute the sparse inverse of A,
+ * that is, a matrix with the same sparsity as A but elements from inv(A).  Note
+ * that, in general, inv(A) is dense but this computes only some elements of it.
+ * All xtypes of A are supported (real, complex, and zomplex).
  */
 
 //#ifndef NCHOLESKY
 
 #include "cholmod_extra.h"
 
-#include "cholmod_internal.h"
-#include "cholmod_cholesky.h"
+#include <suitesparse/cholmod_internal.h>
+#include <suitesparse/cholmod_cholesky.h>
 
 
 /* ========================================================================== */
-/* === cholmod_spolve ======================================================= */
+/* === cholmod_spinv ======================================================== */
 /* ========================================================================== */
 
 cholmod_sparse *CHOLMOD(spinv)	    /* returns the sparse solution X */
