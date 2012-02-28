@@ -1,0 +1,8 @@
+
+This is CHOLMOD Extra Module, a set of additional routines for
+SuiteSparse CHOLMOD module.
+
+Copyright (C) 2012 Jaakko Luttinen <jaakko.luttinen@iki.fi>
+
+CHOLMOD Extra Module is licensed under Version 3.0 of the GNU General
+Public License. See LICENSE for a text of the license.

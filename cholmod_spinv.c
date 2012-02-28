@@ -3,16 +3,34 @@
 /* ========================================================================== */
 
 /* -----------------------------------------------------------------------------
- * CHOLMOD Extra Module.  Copyright (C) 2012, Jaakko Luttinen
- * Extra Module is licensed under Version 3.0 of the GNU General Public License.
- * See LICENSE for a text of the license.
+ * Copyright (C) 2012 Jaakko Luttinen
+ * CHOLMOD Extra Module is licensed under Version 3.0 of the GNU General 
+ * Public License. See LICENSE for a text of the license.
  * -------------------------------------------------------------------------- */
 
-/* Given an LL' or LDL' factorization of A, compute the sparse inverse of A,
+/* -----------------------------------------------------------------------------
+ * This file is part of CHOLMOD Extra Module.
+ *
+ * CHOLDMOD Extra Module is free software: you can redistribute it and/or 
+ * modify it under the terms of the GNU General Public License as published 
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CHOLMOD Extra Module is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CHOLMOD Extra Module.  If not, see <http://www.gnu.org/licenses/>.
+ * -------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * Given an LL' or LDL' factorization of A, compute the sparse inverse of A,
  * that is, a matrix with the same sparsity as A but elements from inv(A).  Note
  * that, in general, inv(A) is dense but this computes only some elements of it.
  * All xtypes of A are supported (real, complex, and zomplex).
- */
+ * -------------------------------------------------------------------------- */
 
 //#ifndef NCHOLESKY
 

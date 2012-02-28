@@ -3,12 +3,30 @@
 /* ========================================================================== */
 
 /* -----------------------------------------------------------------------------
- * cholmod_extra.h. Copyright (C) 2012, Jaakko Luttinen
- * cholmod_extra.h is licensed under Version 3.0 of the GNU General Public 
- * License.  See LICENSE for a text of the license.
+ * Copyright (C) 2012 Jaakko Luttinen
+ * CHOLMOD Extra Module is licensed under Version 3.0 of the GNU General 
+ * Public License. See LICENSE for a text of the license.
  * -------------------------------------------------------------------------- */
 
-/* CHOLMOD Extra Module.
+/* -----------------------------------------------------------------------------
+ * This file is part of CHOLMOD Extra Module.
+ *
+ * CHOLDMOD Extra Module is free software: you can redistribute it and/or 
+ * modify it under the terms of the GNU General Public License as published 
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CHOLMOD Extra Module is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CHOLMOD Extra Module.  If not, see <http://www.gnu.org/licenses/>.
+ * -------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * CHOLMOD Extra Module.
  *
  * Sparse Cholesky routines: sparse inverse.
  *
@@ -16,7 +34,7 @@
  *
  * Requires the Core module, and three packages: CHOLMOD, AMD and COLAMD.
  * Optionally uses the Supernodal and Partition modules.
- */
+ * -------------------------------------------------------------------------- */
 
 #ifndef CHOLMOD_EXTRA_H
 #define CHOLMOD_EXTRA_H
