@@ -28,9 +28,9 @@
 /* -----------------------------------------------------------------------------
  * CHOLMOD Extra Module.
  *
- * Sparse Cholesky routines: sparse inverse.
+ * Sparse matrix routines.
  *
- * cholmod_spinv		sparse inverse (simplicial)
+ * cholmod_spinv		sparse inverse (from simplicial Cholesky)
  *
  * Requires the Core module, and three packages: CHOLMOD, AMD and COLAMD.
  * Optionally uses the Supernodal and Partition modules.
@@ -62,5 +62,6 @@ cholmod_sparse *cholmod_spinv
     /* --------------- */
     cholmod_common *Common
 ) ;
+
 
 #endif
