@@ -48,13 +48,13 @@
 
 #define PERM(j) (Lperm != NULL ? Lperm[j] : j)
 
-void solve_supernode //solve_supernodal
+void CHOLMOD(spinv_block)
 (
     double *L, 
     double *Z, 
     double *V, 
-    int m, 
-    int n,
+    Int m, 
+    Int n,
     cholmod_common *Common
 )
 {
@@ -64,11 +64,11 @@ void solve_supernode //solve_supernodal
     //double minus_half[2] = {-0.5, 0.0} ;
     double *L1, *L2 ;
     double *Z1, *Z2 ;
-    int i, j ;
+    Int i, j ;
 
-    int m1 = n ;      // rows of Z1/L1
-    int m2 = m - m1 ; // rows of Z2/L2
-    int ld = m ;      // leading dimension of Z1/Z2/L1/L2
+    Int m1 = n ;      // rows of Z1/L1
+    Int m2 = m - m1 ; // rows of Z2/L2
+    Int ld = m ;      // leading dimension of Z1/Z2/L1/L2
 
     Z1 = Z ;      // pointer to Z1
     Z2 = Z + m1 ; // pointer to Z2
@@ -140,7 +140,7 @@ void solve_supernode //solve_supernodal
 /* === cholmod_spinv_super ================================================== */
 /* ========================================================================== */
 
-cholmod_sparse *cholmod_spinv_super   /* returns the sparse inverse of X */
+cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
 (
     /* ---- input ---- */
     cholmod_factor *L,	/* (supernodal) factorization to use */
@@ -149,7 +149,7 @@ cholmod_sparse *cholmod_spinv_super   /* returns the sparse inverse of X */
     )
 {
 
-    int s, i, j ;
+    Int s, i, j ;
     Int *Super, *Ls, *Lpi, *Lpx ;
     Int psi0, psi1, j0, j1 ;
 //    Int ms, ns, ld, m1, m2, scol ;
@@ -365,7 +365,7 @@ cholmod_sparse *cholmod_spinv_super   /* returns the sparse inverse of X */
         /*
          * Compute the inverse of the supernode block
          */
-        solve_supernode(Lx + Lpx[s], Z, V, ms, ns, Common) ;
+        CHOLMOD(spinv_block) (Lx + Lpx[s], Z, V, ms, ns, Common) ;
         
         /*
          * Store the result Z = [Z1; Z2] in X
@@ -393,23 +393,6 @@ cholmod_sparse *cholmod_spinv_super   /* returns the sparse inverse of X */
             }
         }
 
-        // DEBUGGING
-        if (s == nsuper-1)
-        {
-            FILE *file = fopen("debugmatrix.txt", "w") ;
-            // Print L
-            for (i = 0; i < ms; i++)
-            {
-                //printf("") ;
-                for (j = 0; j < ns; j++)
-                {
-                    fprintf(file, " %f ", Lx[Lpx[s]+i+j*ms]) ;
-                }
-                fprintf(file, "\n") ;
-            }
-            fclose(file) ;
-        }
-        
     }
             
     // Free workspace
@@ -439,7 +422,7 @@ cholmod_sparse *cholmod_spinv_super   /* returns the sparse inverse of X */
 /* === cholmod_spinv_simplicial ============================================= */
 /* ========================================================================== */
 
-cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
+cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
 (
     /* ---- input ---- */
     cholmod_factor *L,	/* (simplicial) factorization to use */
@@ -688,7 +671,7 @@ cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
 /* === cholmod_spinv ======================================================== */
 /* ========================================================================== */
 
-cholmod_sparse *cholmod_spinv	    /* returns the sparse solution X */
+cholmod_sparse *CHOLMOD(cholmod_spinv)    /* returns the sparse solution X */
 (
     /* ---- input ---- */
     cholmod_factor *L,	/* factorization to use */
@@ -713,11 +696,11 @@ cholmod_sparse *cholmod_spinv	    /* returns the sparse solution X */
      */
     if (L->is_super)
     {
-        return cholmod_spinv_super(L, Common) ;
+        return CHOLMOD(spinv_super) (L, Common) ;
     }
     else
     {
-        return cholmod_spinv_simplicial(L, Common) ;
+        return CHOLMOD(spinv_simplicial) (L, Common) ;
     }
 }
 

@@ -63,5 +63,7 @@ cholmod_sparse *cholmod_spinv
     cholmod_common *Common
 ) ;
 
+cholmod_sparse *cholmod_l_spinv( cholmod_factor *L, cholmod_common *Common ) ;
+
 
 #endif
