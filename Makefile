@@ -16,10 +16,10 @@ MV = mv -f
 LIB = -lcholmod #-lm
 
 # For "make install"
-#INSTALL_LIB = $(HOME)/.local/lib
-#INSTALL_INCLUDE = $(HOME)/.local/include
-INSTALL_LIB = /usr/local/lib
-INSTALL_INCLUDE = /usr/local/include
+INSTALL_LIB = $(HOME)/.local/lib
+INSTALL_INCLUDE = $(HOME)/.local/include
+#INSTALL_LIB = /usr/local/lib
+#INSTALL_INCLUDE = /usr/local/include
 
 # Which version of MAKE you are using (default is "make")
 # MAKE = make
