@@ -84,16 +84,16 @@ for mode in modes:
 	Zd = Z.todense()
 	E = (invK - Z)
 	E[Zd==0] = 0
+#	pl.ion()
+#	pl.figure()
+#	pl.imshow(E, interpolation="nearest")
+#	pl.show()
+#	pl.colorbar()
+#	pl.figure()
+#	pl.imshow(Zd, interpolation="nearest")
+#	pl.show()
+#	pl.colorbar()
 	e = E[Zd!=0]
-	pl.ion()
-	pl.figure()
-	pl.imshow(E, interpolation="nearest")
-	pl.show()
-	pl.colorbar()
-	pl.figure()
-	pl.imshow(Zd, interpolation="nearest")
-	pl.show()
-	pl.colorbar()
 	e.sort()
 	print(e[-20:])
 	print("maxerr", e.max())
@@ -105,8 +105,19 @@ for mode in modes:
 	e = E.sum(axis=0) - 1
 	print("Error2:", np.linalg.norm(e))
 
+	E = invK * K
+	E[Zd==0] = 0
+	e = E[Zd!=0]
+	e.sort()
+#	print(e[-20:])
+	print("maxerr for inv", e.max())
+	print("Error for inv: ", np.linalg.norm(e))
 	E = K.multiply(invK)
 	e = E.sum(axis=0) - 1
 	print("Error2 for inv:", np.linalg.norm(e))
+
+print(Zd)
+print(invK)
+
 
 input("Press ENTER to exit")

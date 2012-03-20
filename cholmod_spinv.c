@@ -48,7 +48,7 @@
 
 #define PERM(j) (Lperm != NULL ? Lperm[j] : j)
 
-void solve_supernodal
+void solve_supernode //solve_supernodal
 (
     double *L, 
     double *Z, 
@@ -61,7 +61,7 @@ void solve_supernodal
     double zero[2]      = {0.0, 0.0} ;
     double one[2]       = {1.0, 0.0} ;
     double minus_one[2] = {-1.0, 0.0} ;
-    double minus_half[2] = {-0.5, 0.0} ;
+    //double minus_half[2] = {-0.5, 0.0} ;
     double *L1, *L2 ;
     double *Z1, *Z2 ;
     int i, j ;
@@ -78,18 +78,11 @@ void solve_supernodal
     /*
      * Initialize Z1 to identity matrix
      */
-    for (i = 0; i < m; i++)
-    {
-        for (j = 0; j < n; j++)
-            Z[i+j*ld] = ((i == j) ? 1.0 : 0.0) ;
-    }
-    /*
     for (i = 0; i < m1; i++)
     {
         for (j = 0; j < m1; j++)
             Z1[i+j*ld] = ((i == j) ? 1.0 : 0.0) ;
     }
-    */
 
     if (m2 > 0) 
     {
@@ -113,17 +106,6 @@ void solve_supernodal
                    Z2, ld,
                    L2, ld,
                    one, Z1, ld) ;
-        /*
-        // Z1 = -Z2'*L2 + Z1 = -L2'*V*L2 + I
-        // DSYR2K(UPLO,TRANS,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
-        BLAS_dsyr2k("L", // lower triangular part of Z1
-                    "T", // transpose A
-                    m1, m2,
-                    minus_half,
-                    Z2, ld,
-                    L2, ld,
-                    one, Z1, ld) ;
-        */
 
     }
 
@@ -152,102 +134,6 @@ void solve_supernodal
 }
 
 
-void solve_supernodal_backup
-(
-    double *L, 
-    double *Z, 
-    double *V, 
-    int m, 
-    int n,
-    cholmod_common *Common
-)
-{
-    double zero[2]      = {0.0, 0.0} ;
-    double one[2]       = {1.0, 0.0} ;
-    double minus_one[2] = {-1.0, 0.0} ;
-    double *L1, *L2 ;
-    double *Z1, *Z2 ;
-    int i, j ;
-
-    int m1 = n ;      // rows of Z1/L1
-    int m2 = m - m1 ; // rows of Z2/L2
-    int ld = m ;      // leading dimension of Z1/Z2/L1/L2
-
-    Z1 = Z ;      // pointer to Z1
-    Z2 = Z + m1 ; // pointer to Z2
-    L1 = L ;      // pointer to L1
-    L2 = L + m1 ; // pointer to L2
-
-    /*
-     * Initialize Z1 to identity matrix
-     */
-    for (i = 0; i < m1; i++)
-    {
-        for (j = 0; j < m1; j++)
-            Z1[i+j*ld] = ((i == j) ? 1.0 : 0.0) ;
-    }
-
-    if (m2 > 0) 
-    {
-        /* Compute Z2 = - V * L2 / L1 */
-        // DSYMM(SIDE,UPLO,M,N,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
-        BLAS_dsymm("L", // left multiply
-                   "L", // in lower triangular form
-                   m2, n, 
-                   minus_one,
-                   V, m2, 
-                   L2, ld, 
-                   zero, Z2, ld) ;
-        // DTRSM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
-        BLAS_dtrsm("R", // divide from right 
-                   "L", // lower triangular
-                   "N", // no transpose
-                   "N", // not unit diagonal
-                   m2, n,
-                   one,
-                   L1, ld,
-                   Z2, ld) ;
-    }
-
-    /* 
-     * Compute:
-     *   Z1 = (inv(L1)' - Z2'*L2) / L1 
-     * or
-     *   Z1 = (inv(L1)' / L1 
-     */
-    // Z1 = L1' \ I
-    // DTRSM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
-    BLAS_dtrsm("L", // divide from left
-               "L", // lower triangular
-               "T", // transpose
-               "N", // not unit diagonal
-               m1, m1,
-               one,
-               L1, ld,
-               Z1, ld) ;
-    if (m2 > 0)
-    {
-        // Z1 = -Z2'*L2 + Z1
-        // DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
-        BLAS_dgemm("T", // transpose Z2
-                   "N", // no transpose for L2
-                   m1, m1, m2,
-                   minus_one,
-                   Z2, ld,
-                   L2, ld,
-                   one, Z1, ld) ;
-    }
-    // Z1 = Z1 / L1
-    // DTRSM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
-    BLAS_dtrsm("R", // divide from right
-               "L", // lower triangular
-               "N", // no transpose
-               "N", // not unit diagonal
-               m1, m1,
-               one,
-               L1, ld,
-               Z1, ld) ;
-}
 
 
 /* ========================================================================== */
@@ -479,7 +365,7 @@ cholmod_sparse *cholmod_spinv_super   /* returns the sparse inverse of X */
         /*
          * Compute the inverse of the supernode block
          */
-        solve_supernodal(Lx + Lpx[s], Z, V, ms, ns, Common) ;
+        solve_supernode(Lx + Lpx[s], Z, V, ms, ns, Common) ;
         
         /*
          * Store the result Z = [Z1; Z2] in X
@@ -562,21 +448,23 @@ cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
     )
 {
 
-    int xtype;
+    int xtype ;
     cholmod_sparse *X ;
-    double *Lx, *Lz, *Xx, *Xz, *Z, *z, *Lxj;
-    double djj;
-    Int *Li, *Lp, *Xp, *Xi;
-    Int *perm, *Lperm, *ncol;
-    Int n, kmin, kmax, nj, iz, jz, il, jl, kl, ix, jx, kx, ip, jp;
-    size_t nz;
-    double dot, minus_one[2], one[2], zero[2] ;
+    double *Lx, *Lz, *Xx, *Xz, *V, *z, *Lxj ;
+    double djj ;
+    Int *Li, *Lp, *Xp, *Xi ;
+    Int *perm, *Lperm, *ncol ;
+    Int n, kmin, kmax, nj, iz, jz, il, jl, kl, ix, jx, kx, ip, jp ;
+    size_t nz, maxsize ;
+//*
+    double minus_one[2], one[2], zero[2] ;
     minus_one[0] = -1.0 ;
     minus_one[1] = 0.0 ;
     one[0] = 1.0 ;
     one[1] = 0.0 ;
     zero[0] = 0.0 ;
     zero[1] = 0.0 ;
+//*/
 
 
     // Dimensionality of the matrix
@@ -607,7 +495,7 @@ cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
     Lz = L->z ;
     Lperm = L->Perm ;
 
-    Z = NULL ;
+    V = NULL ;
     z = NULL ;
     Lxj = NULL ;
 
@@ -632,8 +520,14 @@ cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
     }
     
     /* Compute column pointers by computing cumulative sum */
+    maxsize = 0 ;
     for (jx = 1; jx <= n; jx++)
+    {
+        if (Xp[jx] > maxsize)
+            maxsize = Xp[jx] - 1 ; // number of non-zeros (without diagonal)
         Xp[jx] += Xp[jx-1] ;
+    }
+
     /* Add row indices */
     ncol = (Int*)calloc(n, sizeof(Int)) ;
     perm = malloc(nz*sizeof(Int)) ; // permutation mapping
@@ -659,6 +553,10 @@ cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
     free(ncol) ;
     X->sorted = FALSE ;
 
+    // Allocate memory for a temporary matrix and vector
+    z = malloc((maxsize+1)*sizeof(double)) ;
+    V = malloc((maxsize*maxsize)*sizeof(double)) ;
+                            
     if (L->is_ll)
     {
 
@@ -700,10 +598,6 @@ cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
                     // diagonal element and zeros)
                     Lxj = Lx + (kmin+1) ;
 
-                    // Allocate memory for a temporary matrix and vector
-                    z = (double*) realloc(z, nj*sizeof(double)) ;
-                    Z = (double*) realloc(Z, (nj*nj)*sizeof(double)) ;
-                            
                     // Form Z
                     for (jz = 0; jz < nj; jz++)
                     {
@@ -726,13 +620,13 @@ cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
                                 kx++ ;
                                 
                             // Set Z[iz,jz] = X[ix,jx]
-                            Z[iz+jz*nj] = Xx[perm[kx]] ;
+                            V[iz+jz*nj] = Xx[perm[kx]] ;
                         }
                             
                     }
 
                     // DSYMV(UPLO,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
-                    BLAS_dsymv("L", nj, one, Z, nj, Lxj, 1, zero, z, 1) ;
+                    BLAS_dsymv("L", nj, one, V, nj, Lxj, 1, zero, z, 1) ;
 
                     // Copy the result to the lower part of X
                     for (iz = 0; iz < nj; iz++)
@@ -741,11 +635,10 @@ cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
                         Xx[perm[kx]] = -z[iz] ;
                     }
 
-                    // DDOT(N,DX,INCX,DY,INCY)
-                    BLAS_ddot(nj, z, 1, Lxj, 1, dot) ;
-
                     // Compute the diagonal element X[j,j]
-                    Xx[perm[kmin]] = 1.0/djj + dot ;
+                    // DDOT(N,DX,INCX,DY,INCY)
+                    BLAS_ddot(nj, z, 1, Lxj, 1, Xx[perm[kmin]]) ;
+                    Xx[perm[kmin]] += 1.0/djj ;
 
                 }
                 else
@@ -767,7 +660,7 @@ cholmod_sparse *cholmod_spinv_simplicial  /* returns the sparse solution X */
 
     }
 
-    free(Z) ;
+    free(V) ;
     free(z) ;
     free(perm) ;
 
