@@ -17,20 +17,14 @@ CP = cp -f
 MV = mv -f
 # RM = rm -f
 
-# Fortran compiler (not required for 'make' or 'make library')
-#F77 = gfortran
-#F77FLAGS = $(FFLAGS) -O
-#F77LIB =
-
 # C and Fortran libraries
 LIB = -lcholmod #-lm
 
 # For "make install"
-# JAAKKO: LOCAL INSTALLATION
-INSTALL_LIB = $(HOME)/.local/lib
-INSTALL_INCLUDE = $(HOME)/.local/include
-#INSTALL_LIB = /usr/local/lib
-#INSTALL_INCLUDE = /usr/local/include
+#INSTALL_LIB = $(HOME)/.local/lib
+#INSTALL_INCLUDE = $(HOME)/.local/include
+INSTALL_LIB = /usr/local/lib
+INSTALL_INCLUDE = /usr/local/include
 
 # Which version of MAKE you are using (default is "make")
 # MAKE = make
@@ -42,29 +36,6 @@ INSTALL_INCLUDE = $(HOME)/.local/include
 CLEAN = Build/*.o
 
 default: all
-
-#ccode: all
-
-#include ../../UFconfig/UFconfig.mk
-
-#-------------------------------------------------------------------------------
-# the optional Partition module requires METIS, CAMD, and CCOLAMD
-#I_WITH_PARTITION =
-#CONFIG =
-#ifeq (,$(findstring -DNPARTITION, $(CHOLMOD_CONFIG)))
-#    # METIS is check if METIS is available
-#    ifeq (../../metis-4.0, $(wildcard ../../metis-4.0))
-#        I_WITH_PARTITION = -I$(METIS_PATH)/Lib \
-#            -I../../CCOLAMD/Include -I../../CAMD/Include
-#    else
-#        # METIS is not available, but CHOLMOD_CONFIG does not specify
-#        # -DNPARTITION.  Add it here so we can still compile CHOLMOD.
-#        CONFIG = -DNPARTITION
-#    endif
-#endif
-
-#I = -I../../AMD/Include -I../../AMD/Source -I../../COLAMD/Include \
-#	$(I_WITH_PARTITION) -I../Include -I../../UFconfig
 
 #-------------------------------------------------------------------------------
 
@@ -136,7 +107,7 @@ install:
 	$(CP) Build/libcholmod-extra.so $(INSTALL_LIB)/libcholmod-extra.so.$(VERSION)
 	( cd $(INSTALL_LIB) ; ln -sf libcholmod-extra.so.$(VERSION) libcholmod-extra.so )
 	$(CP) Include/cholmod_extra*.h $(INSTALL_INCLUDE)
-	chmod 644 $(INSTALL_LIB)/libcholmod-extra.so*
+	chmod 755 $(INSTALL_LIB)/libcholmod-extra.so*
 	chmod 644 $(INSTALL_INCLUDE)/cholmod_extra*.h
 
 # uninstall CHOLMOD Extra
