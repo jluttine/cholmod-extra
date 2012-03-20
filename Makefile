@@ -5,12 +5,7 @@
 VERSION = 1.0.0
 
 # C and C++ compiler flags.  The first three are standard for *.c and *.cpp
-CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O3 -fexceptions -fPIC
-
-# ranlib, and ar, for generating libraries.  If you don't need ranlib,
-# just change it to RANLAB = echo
-RANLIB = ranlib
-ARCHIVE = $(AR) $(ARFLAGS)
+CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O3 -fexceptions -fPIC -Wall
 
 # copy, delete, and rename a file
 CP = cp -f
