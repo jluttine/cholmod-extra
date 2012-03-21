@@ -276,8 +276,6 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
             }
         }
         
-//        printf("Supernode %d/%d, col=%d permuted_col=%d: cols=%d, rows=%d\n", s+1, (int)nsuper, j0, PERM(j0), ns, ms) ;
-//        fflush(stdout) ;
     }
     free(ncol) ;
     X->sorted = FALSE ;
@@ -297,7 +295,6 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
     /*
      * Compute the sparse inverse
      */
-    printf("Number of supernodes %d\n", (int)nsuper) ;
     for (s = nsuper - 1; s >= 0; s--)
     {
 
@@ -313,11 +310,8 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
         psi1 = Lpi[s+1] ;  // "pointer" to last row index (+1)
         ms = psi1 - psi0 ; // number of rows
 
-        //psx = Lpx[s] ; // "pointer" to data of the supernode
-
         // Z = [Z1; Z2] where Z1 is ns x ns and Z2 is (ms-ns) x ns
         // L = [L1; L2] where L1 is ns x ns and L2 is (ms-ns) x ns
-        //ld = ms ;               // leading dimension
         m1 = ns ;               // rows of Z1/L1
         m2 = ms - ns ;          // rows of Z2/L2
 
@@ -671,7 +665,7 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
 /* === cholmod_spinv ======================================================== */
 /* ========================================================================== */
 
-cholmod_sparse *CHOLMOD(cholmod_spinv)    /* returns the sparse solution X */
+cholmod_sparse *CHOLMOD(spinv)    /* returns the sparse solution X */
 (
     /* ---- input ---- */
     cholmod_factor *L,	/* factorization to use */
