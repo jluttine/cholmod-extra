@@ -1,8 +1,24 @@
 
 This is CHOLMOD Extra Module, a set of additional routines for
 SuiteSparse CHOLMOD module.
+ 
+== ROUTINES ==
 
-Copyright (C) 2012 Jaakko Luttinen <jaakko.luttinen@iki.fi>
+cholmod_spinv - Computes the sparse inverse of a matrix given its
+                Cholesky decomposition.
+
+== AVAILABILITY ==
+
+GIT repository can be found at
+git://gitorious.org/cholmod-extra/cholmod-extra.git
+
+== CONTACT ==
+
+Jaakko Luttinen <jaakko.luttinen@aalto.fi>
+
+== LICENSE ==
+
+Copyright (C) 2012 Jaakko Luttinen, Aalto University
 
 CHOLMOD Extra Module is licensed under Version 3.0 of the GNU General
 Public License. See LICENSE for a text of the license.
