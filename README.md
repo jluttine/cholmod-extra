@@ -4,6 +4,10 @@ CHOLMOD Extra Module provides a set of additional routines for SuiteSparse CHOLM
  
 GIT repository can be found at git://gitorious.org/cholmod-extra/cholmod-extra.git
 
+## Documentation
+
+Documentation can be found at Docs-directory or http://cholmod-extra.readthedocs.org/ .
+
 ## Routines
 
 - cholmod_spinv - Computes the sparse inverse of a matrix given its Cholesky decomposition.
