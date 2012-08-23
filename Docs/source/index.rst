@@ -15,11 +15,3 @@ Welcome to cholmod-extra's documentation!
    bibliography
 
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
