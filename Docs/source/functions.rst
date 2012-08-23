@@ -1,24 +1,28 @@
 Functions
 =========
 
-* Sparse inverse
-
 Sparse inverse
 --------------
+
+.. cpp:function:: cholmod_sparse* cholmod_spinv(cholmod_factor *L, cholmod_common *Common)
+
+   Return the sparse inverse given the Cholesky factor.  The sparse
+   inverse contains elements from the inverse matrix but has the same
+   sparsity structure as the Cholesky factor (symbolically).
 
 Although the inverse of a sparse matrix is dense in general, it is
 sometimes sufficient to compute only some elements of the inverse.
 For instance, in order to compute
 :math:`\operatorname{tr}(\mathbf{K}^{-1}\mathbf{A})`, it is sufficient
 to find those elements of :math:`\mathbf{K}^{-1}` that are non-zero in
-:math:`\mathbf{A}^{\mathrm{T}}`.  If :math:`\mathbf{K}` is symmetric
-positive-definite and :math:`\mathbf{A}` has the same sparsity
-structure as :math:`\mathbf{K}` (e.g.,
-:math:`\mathbf{A}=\partial\mathbf{K}/\partial\theta`), an efficient
-algorithm can be used to compute the elements of the inverse
-:math:`\mathbf{K}^{-1}` that correspond to the non-zero elements in
-:math:`\mathbf{K}` [Takahashi:1973]_.  The resulting sparse matrix is
-called the *sparse inverse*.
+:math:`\mathbf{A}^{\mathrm{T}}`.  If :math:`\mathbf{A}^{\mathrm{T}}`
+has the same sparsity structure as :math:`\mathbf{K}` (e.g.,
+:math:`\mathbf{A}^{\mathrm{T}}=\partial\mathbf{K}/\partial\theta`),
+one only needs to compute those elements of the inverse
+:math:`\mathbf{K}^{-1}` that are non-zero in :math:`\mathbf{K}`.
+These elements can be computed using an efficient algorithm if
+:math:`\mathbf{K}` is symmetric positive-definite [Takahashi:1973]_.
+The resulting sparse matrix is called the sparse inverse.
 
 The algorithm for computing the sparse inverse can be derived as
 follows [Vanhatalo:2008]_.  Let's denote the inverse as
@@ -47,6 +51,8 @@ Subtracting the second term on the left and multiplying by
    
    \mathbf{Z} = \mathbf{L}^{-\mathrm{T}} \mathbf{\Lambda}^{-1} -
    \mathbf{Z} (\mathbf{L} - \mathbf{\Lambda}) \mathbf{\Lambda}^{-1}.
+
+
 
 .. [Takahashi:1973] Takahashi K, Fagan J, and Chen M-S
                     (1973). Formation of a sparse bus impedance matrix

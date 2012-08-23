@@ -1,13 +1,17 @@
-Install
-=======
+Installation
+============
 
-Clone the Git repository:
+The module depends on `SuiteSparse
+<http://www.cise.ufl.edu/research/sparse/SuiteSparse/>`_, thus install
+it if you do not have it installed.  Instructions can be found at
+http://www.cise.ufl.edu/research/sparse/SuiteSparse/.  After
+installing the dependencies, clone the Git repository:
 
 ::
 
     git clone https://github.com/jluttine/cholmod-extra.git
     
-Run the following commands:
+Compile and install the module:
 
 ::
     
@@ -17,10 +21,10 @@ Run the following commands:
 
 TODO: Check the installation directory in Makefile!
 
-The documentation can be found in Docs/ folder.  The source files are
-readable as such in reStructuredText format.  If you have `Sphinx
-<http://sphinx.pocoo.org/>`_ installed, the documentation can be
-compiled to, for instance, HTML or PDF using
+This documentation can be found in Docs/ folder.  The documentation
+source files are readable as such in reStructuredText format.  If you
+have `Sphinx <http://sphinx.pocoo.org/>`_ installed, the documentation
+can be compiled to, for instance, HTML or PDF using
 
 ::
 
@@ -28,4 +32,5 @@ compiled to, for instance, HTML or PDF using
     make html
     make latexpdf
 
-The documentation can be found also in http://cholmod-extra.readthedocs.org/.
+The documentation can be found also at
+http://cholmod-extra.readthedocs.org/ in various formats.
