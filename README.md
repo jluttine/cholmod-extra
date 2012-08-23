@@ -18,6 +18,6 @@ Jaakko Luttinen jaakko.luttinen@aalto.fi
 
 ## License
 
-    Copyright (C) 2012 Jaakko Luttinen, Aalto University
+Copyright (C) 2012 Jaakko Luttinen, Aalto University
 
-    CHOLMOD Extra Module is licensed under Version 3.0 of the GNU General Public License. See LICENSE for a text of the license.
+CHOLMOD Extra Module is licensed under Version 3.0 of the GNU General Public License. See LICENSE for a text of the license.

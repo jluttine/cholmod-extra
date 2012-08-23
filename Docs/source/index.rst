@@ -6,13 +6,13 @@
 Welcome to cholmod-extra's documentation!
 =========================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
    install
    functions
+   license
+   bibliography
 
 
 
