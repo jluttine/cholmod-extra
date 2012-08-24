@@ -25,7 +25,7 @@ These elements can be computed using an efficient algorithm if
 The resulting sparse matrix is called the sparse inverse.
 
 The algorithm for computing the sparse inverse can be derived as
-follows [Vanhatalo:2008]_.  Let's denote the inverse as
+follows [Vanhatalo:2008]_.  Denote the inverse as
 :math:`\mathbf{Z}=\mathbf{K}^{-1}` and the Cholesky decomposition as
 :math:`\mathbf{LL}^{\mathrm{T}} = \mathbf{K}`, where
 :math:`\mathbf{L}` is a lower triangular matrix.  We have the identity
@@ -48,11 +48,75 @@ Subtracting the second term on the left and multiplying by
 :math:`\mathbf{\Lambda}^{-1}` from the right yields
 
 .. math::
-   
+   :label: recursion
+
    \mathbf{Z} = \mathbf{L}^{-\mathrm{T}} \mathbf{\Lambda}^{-1} -
    \mathbf{Z} (\mathbf{L} - \mathbf{\Lambda}) \mathbf{\Lambda}^{-1}.
 
+One can also use Cholesky decomposition of the form
+:math:`\tilde{\mathbf{L}} \mathbf{D} \tilde{\mathbf{L}}^{\mathrm{T}} =
+\mathbf{K}`, where :math:`\tilde{\mathbf{L}}` has unit diagonal and
+:math:`\mathbf{D}` is a diagonal matrix.  In that case, equation
+:eq:`recursion` transforms to
 
+.. math::
+
+   \mathbf{Z} = \tilde{\mathbf{L}}^{-\mathrm{T}} \mathbf{D}^{-1} -
+   \mathbf{Z} (\tilde{\mathbf{L}} - \mathbf{I}).
+
+These formulae can be used to solve the inverse recursively.  The
+recursive update formulae are shown for the supernodal factorization,
+because the update formulae for the simplicial factorization can be
+seen as a special case, and possible permutations are ignored.
+
+
+The inverse is computed for each supernodal block at a time starting
+from the lower right corner. Now, consider one iteration step.  Let
+:math:`\mathbf{Z}_C` denote the lower right part of the inverse which
+has already been computed.  The supernodal block that is updated
+consists of :math:`\mathbf{Z}_A` and :math:`\mathbf{Z}_B` as
+
+.. math::
+
+   \mathbf{Z} = 
+   \left[ \begin{matrix}
+     \ddots & \vdots       & \vdots \\
+     \cdots & \mathbf{Z}_A & \mathbf{Z}^{\mathrm{T}}_B \\
+     \cdots & \mathbf{Z}_B & \mathbf{Z}_C
+   \end{matrix} \right],
+
+where :math:`\mathbf{Z}_A` and :math:`\mathbf{Z}_C` are square
+matrices on the diagonal.  Using the same division to blocks for
+:math:`\mathbf{L}`, from :eq:`recursion` follows that
+
+.. math::
+   
+   \mathbf{Z}_B &= - \mathbf{Z}_C \mathbf{L}_B \mathbf{L}^{-1}_A,
+   \\
+   \mathbf{Z}_A &= \mathbf{L}^{-\mathrm{T}}_{A} \mathbf{L}^{-1}_A -
+   \mathbf{Z}^{\mathrm{T}}_B \mathbf{L}_B \mathbf{L}^{-1}_A.
+
+For the first iteration step, the update equation is
+:math:`\mathbf{Z}_A = \mathbf{L}^{-\mathrm{T}}_{A} \mathbf{L}^{-1}_A`.
+
+Instead of computing the full inverse using this recursion, it is
+possible to gain significant speed-up if one computes the sparse
+inverse, because then it is sufficient to compute only those elements
+that are symbolically non-zero in :math:`\mathbf{L}`.  This means that
+one can discard those rows from the block :math:`B` that are
+symbolically zero in :math:`\mathbf{L}_B`.  Also, the same rows and
+the corresponding columns can be discarded from the block :math:`C`.
+Thus, the blocks :math:`B` and :math:`C` are effectively very small
+for the numerical matrix product computations.  For the simplicial
+factorization, each block is one column wide, that is,
+:math:`\mathbf{Z}_A` is a scalar and :math:`\mathbf{Z}_B` is a vector.
+
+For :math:`\mathbf{K} = \tilde{\mathbf{L}} \mathbf{D}
+\tilde{\mathbf{L}}^{\mathrm{T}}` factorization:
+
+.. math::
+   
+   ?
 
 .. [Takahashi:1973] Takahashi K, Fagan J, and Chen M-S
                     (1973). Formation of a sparse bus impedance matrix
