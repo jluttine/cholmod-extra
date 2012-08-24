@@ -102,7 +102,7 @@ For the first iteration step, the update equation is
 Instead of computing the full inverse using this recursion, it is
 possible to gain significant speed-up if one computes the sparse
 inverse, because then it is sufficient to compute only those elements
-that are symbolically non-zero in :math:`\mathbf{L}`.  This means that
+that are symbolically non-zero in :math:`\mathbf{L}`.  It follows that
 one can discard those rows from the block :math:`B` that are
 symbolically zero in :math:`\mathbf{L}_B`.  Also, the same rows and
 the corresponding columns can be discarded from the block :math:`C`.
@@ -116,7 +116,7 @@ For :math:`\mathbf{K} = \tilde{\mathbf{L}} \mathbf{D}
 
 .. math::
    
-   ?
+   \text{TODO}
 
 .. [Takahashi:1973] Takahashi K, Fagan J, and Chen M-S
                     (1973). Formation of a sparse bus impedance matrix
