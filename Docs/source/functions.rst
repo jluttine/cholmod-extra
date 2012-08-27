@@ -112,11 +112,55 @@ factorization, each block is one column wide, that is,
 :math:`\mathbf{Z}_A` is a scalar and :math:`\mathbf{Z}_B` is a vector.
 
 For :math:`\mathbf{K} = \tilde{\mathbf{L}} \mathbf{D}
-\tilde{\mathbf{L}}^{\mathrm{T}}` factorization:
+\tilde{\mathbf{L}}^{\mathrm{T}}` factorization, the update equations
+are
 
 .. math::
    
-   \text{TODO}
+   \mathbf{Z}_B &= - \mathbf{Z}_C \tilde{\mathbf{L}}_B
+   \tilde{\mathbf{L}}^{-1}_A, 
+   \\ 
+   \mathbf{Z}_A &=
+   \tilde{\mathbf{L}}^{-\mathrm{T}}_{A} \mathbf{D}^{-1}_A 
+   \tilde{\mathbf{L}}^{-1}_A -
+   \mathbf{Z}^{\mathrm{T}}_B \tilde{\mathbf{L}}_B 
+   \tilde{\mathbf{L}}^{-1}_A,
+
+and for the first iteration step, :math:`\mathbf{Z}_A =
+\tilde{\mathbf{L}}^{-\mathrm{T}}_{A} \mathbf{D}_A
+\tilde{\mathbf{L}}^{-1}_A`.
+
+
+The following methods have been implemented in cholmod-extra.
+
+..
+   ========== ==== ======= ======= ==== ======= =======
+   a                   LL                   LDL
+   ---------- -------------------- --------------------
+   b          Real Complex Zomplex Real Complex Zomplex
+   ========== ==== ======= ======= ==== ======= =======
+   Simplicial no   no      no      yes  no      no
+   Supernodal yes  no      no      no   no      no
+   ========== ==== ======= ======= ==== ======= =======
+
+.. daksjl
+   tabularcolumns:: |r|r|r|r|r|r|r|
+
+.. table:: Implemented sparse inverse methods. 
+
+   +------------+------+---------+---------+------+---------+---------+
+   |            | :math:`\mathbf{LL}       | :math:`\tilde{\mathbf{L}}|
+   |            | ^{\mathrm{T}}`           | \mathbf{D}               |
+   |            |                          | \tilde{\mathbf{L}}       |
+   |            |                          | ^{\mathrm{T}}`           |
+   +------------+------+---------+---------+------+---------+---------+
+   |            | Real | Complex | Zomplex | Real | Complex | Zomplex |
+   +============+======+=========+=========+======+=========+=========+
+   | Simplicial | no   | no      | no      | yes  | no      | no      |
+   +------------+------+---------+---------+------+---------+---------+
+   | Supernodal | yes  | no      | no      | no   | no      | no      |
+   +------------+------+---------+---------+------+---------+---------+
+
 
 .. [Takahashi:1973] Takahashi K, Fagan J, and Chen M-S
                     (1973). Formation of a sparse bus impedance matrix

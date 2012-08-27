@@ -13,6 +13,5 @@ Welcome to cholmod-extra's documentation!
    install
    functions
    license
-   bibliography
 
 
