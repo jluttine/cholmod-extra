@@ -1,6 +1,8 @@
 # CHOLMOD Extra Module
 
 CHOLMOD Extra Module provides a set of additional routines for SuiteSparse CHOLMOD Module http://www.cise.ufl.edu/research/sparse/cholmod/.
+
+Project home page is located at https://github.com/jluttine/cholmod-extra .
  
 GIT repository can be found at https://github.com/jluttine/cholmod-extra.git .
 
