@@ -1,3 +1,37 @@
+/* ========================================================================== */
+/* === cholmod_test_spinv =================================================== */
+/* ========================================================================== */
+
+/* -----------------------------------------------------------------------------
+ * Copyright (C) 2012 Jaakko Luttinen
+ *
+ * cholmod_test_spinv.c is licensed under Version 2 of the GNU General
+ * Public License, or (at your option) any later version. See LICENSE
+ * for a text of the license.
+ * -------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * This file is part of CHOLMOD Extra Module.
+ *
+ * CHOLDMOD Extra Module is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * CHOLMOD Extra Module is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CHOLMOD Extra Module.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ * -------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * Test sparse inverse.
+ * -------------------------------------------------------------------------- */
+
 
 #include "cholmod_extra.h"
 #include <suitesparse/cholmod.h>
