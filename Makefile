@@ -10,7 +10,7 @@ CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O3 -fexceptions -fPIC -Wall
 # copy, delete, and rename a file
 CP = cp -f
 MV = mv -f
-# RM = rm -f
+RM = rm -rf
 
 # C and Fortran libraries
 LIB = -lcholmod #-lm
@@ -28,7 +28,7 @@ INSTALL_INCLUDE = $(PREFIX)/include/suitesparse
 #------------------------------------------------------------------------------
 # remove object files
 #------------------------------------------------------------------------------
-CLEAN = Build/*.o
+CLEAN = Build/*.o Build/
 
 default: all
 
@@ -36,7 +36,7 @@ default: all
 
 C = $(CC) $(CF) $(CHOLMOD_CONFIG) $(CONFIG)
 
-all: Build/libcholmod-extra.so
+all: Build/libcholmod-extra.so tests
 
 library: Build/libcholmod-extra.so
 
@@ -88,14 +88,16 @@ $(OBJ): $(INC)
 # Extra Module:
 #-------------------------------------------------------------------------------
 
-Build/cholmod_spinv.o: Source/cholmod_spinv.c
+Build/cholmod_spinv.o: Source/cholmod_spinv.c Build
 	$(C) -c $(I) $< -o $@
 
 #-------------------------------------------------------------------------------
 
-Build/cholmod_l_spinv.o: Source/cholmod_spinv.c
+Build/cholmod_l_spinv.o: Source/cholmod_spinv.c Build
 	$(C) -DDLONG -c $(I) $< -o $@
 
+Build:
+	mkdir -p Build
 
 # install CHOLMOD Extra
 install:
@@ -110,4 +112,6 @@ uninstall:
 	$(RM) $(INSTALL_LIB)/libcholmod-extra.so*
 	$(RM) $(INSTALL_INCLUDE)/cholmod_extra*.h
 
-
+# Compile tests
+tests: Build library
+	$(C) $(I) Source/cholmod_test_spinv.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -o Build/cholmod_test_spinv
