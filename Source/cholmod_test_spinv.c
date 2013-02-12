@@ -116,6 +116,7 @@ int main(void)
 
     // Make the matrix sparse
     K = cholmod_dense_to_sparse(A, TRUE, &Common) ;
+    K->stype = 1; // Use upper triangular part.
 
     // Identity matrix
     I = cholmod_eye(N,N,CHOLMOD_REAL,&Common) ;

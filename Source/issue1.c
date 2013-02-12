@@ -38,22 +38,17 @@ int main(void)
     A = cholmod_zeros(N, N, CHOLMOD_REAL, &Common) ;
     Ax =(double*) A->x ;
     nz = N ;
+
     // Make positive-definite by adding something positive to the
     // diagonal
     for (n = 0; n < N; n++)
     {
         Ax[n+n*N] += 5;
     }
-/*
-    for (n=0; n < N-1; n++)
-    {
-        Ax[n+n*N+1] += 1;
-        Ax[n+(n+1)*N] += 1;
-    }
-*/
-    cholmod_print_dense(A,"A",&Common);
+
     // Make the matrix sparse
     K = cholmod_dense_to_sparse(A, TRUE, &Common) ;
+    K->stype = 1 ; // NEED TO MAKE THE MATRIX SYMMETRIC
 
     // Identity matrix
     I = cholmod_eye(N,N,CHOLMOD_REAL,&Common) ;
@@ -61,30 +56,28 @@ int main(void)
     /* SIMPLICIAL */
 
     // Factorize
-    //Common.supernodal = CHOLMOD_SUPERNODAL ;
     Common.supernodal = CHOLMOD_SIMPLICIAL ;
     L = cholmod_analyze(K, &Common) ;
     cholmod_factorize(K, L, &Common) ;
     invK = cholmod_solve(CHOLMOD_A, L, I, &Common) ;
+
+    // Compute the sparse inverse and the full inverse
+    start = clock();
+    V = cholmod_spinv(L, &Common) ;
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
+    // Show results
     cholmod_print_sparse(K,"Original",&Common) ;
     cholmod_print_factor(L,"Factor",&Common) ;
-    cholmod_print_dense(invK,"Dense inverse",&Common) ;
+    cholmod_print_sparse(V,"Sparse inverse",&Common) ;
+    cholmod_print_dense(invK,"Dense inverse",&Common);
+
+    // Free memory
     cholmod_free_factor(&L, &Common) ;
     cholmod_free_sparse(&K, &Common) ;
     cholmod_free_dense(&I, &Common) ;
     cholmod_free_dense(&A, &Common) ;
+    cholmod_finish(&Common) ;
     return 0 ;
-
-    // Compute the sparse inverse and the full inverse
-    start = clock();
-    //V = cholmod_spinv(L, &Common) ;
-
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    spinvK = cholmod_sparse_to_dense(V, &Common) ;
-    cholmod_print_sparse(K,"Original",&Common) ;
-    cholmod_print_factor(L,"Factor",&Common) ;
-    //cholmod_print_sparse(V,"Sparse inverse",&Common) ;
-    //cholmod_print_dense(spinvK,"V",&Common);
-
 }
