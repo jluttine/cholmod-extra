@@ -36,7 +36,7 @@ default: all
 
 C = $(CC) $(CF) $(CHOLMOD_CONFIG) $(CONFIG)
 
-all: Build/libcholmod-extra.so tests
+all: Build/libcholmod-extra.so tests issues
 
 library: Build/libcholmod-extra.so
 
@@ -113,5 +113,8 @@ uninstall:
 	$(RM) $(INSTALL_INCLUDE)/cholmod_extra*.h
 
 # Compile tests
-tests: Build library
+tests: library
 	$(C) $(I) Source/cholmod_test_spinv.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -o Build/cholmod_test_spinv
+
+issues: library
+	$(C) $(I) Source/issue1.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -o Build/issue1
