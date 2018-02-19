@@ -42,8 +42,7 @@
 #include "cholmod_extra.h"
 #include "cholmod_extra_internal.h"
 
-//#include <suitesparse/cholmod_internal.h>
-#include <suitesparse/cholmod_cholesky.h>
+#include <cholmod_cholesky.h>
 
 #define PERM(j) (Lperm != NULL ? Lperm[j] : j)
 
