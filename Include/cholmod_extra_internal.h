@@ -39,7 +39,7 @@
 #ifndef CHOLMOD_EXTRA_INTERNAL_H
 #define CHOLMOD_EXTRA_INTERNAL_H
 
-#include <suitesparse/cholmod_internal.h>
+#include <cholmod_internal.h>
 
 #ifdef SUN64
 
