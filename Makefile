@@ -19,7 +19,7 @@ LIB = -lcholmod #-lm
 PREFIX = $(HOME)
 #PREFIX = /usr/local
 INSTALL_LIB = $(PREFIX)/lib
-INSTALL_INCLUDE = $(PREFIX)/include/suitesparse
+INSTALL_INCLUDE = $(PREFIX)/include
 
 # Which version of MAKE you are using (default is "make")
 # MAKE = make
@@ -114,7 +114,7 @@ uninstall:
 
 # Compile tests
 tests: library
-	$(C) $(I) Source/cholmod_test_spinv.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -o Build/cholmod_test_spinv
+	$(C) $(I) Source/cholmod_test_spinv.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -lm -o Build/cholmod_test_spinv
 
 issues: library
 	$(C) $(I) Source/issue1.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -o Build/issue1
