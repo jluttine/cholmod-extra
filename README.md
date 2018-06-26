@@ -16,10 +16,13 @@ Documentation can be found at Docs-directory or http://cholmod-extra.readthedocs
 
 ## Contact
 
-Jaakko Luttinen jaakko.luttinen@aalto.fi
+Jaakko Luttinen jaakko.luttinen@iki.fi
 
 ## License
 
-Copyright (C) 2012 Jaakko Luttinen, Aalto University
+Copyright (C) 2012 Jaakko Luttinen
 
 CHOLMOD Extra Module is licensed under Version 2 of the GNU General Public License, or at your option any later version. See LICENSE for a text of the license.
+
+Licenses for proprietary purpose may be asked from the author.
+
