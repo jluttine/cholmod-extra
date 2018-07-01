@@ -2,7 +2,7 @@
 # Makefile: for compiling the CHOLMOD-EXTRA library
 #===============================================================================
 
-VERSION = 1.0.0
+VERSION = 1.1.0
 
 # C and C++ compiler flags.  The first three are standard for *.c and *.cpp
 CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O3 -fexceptions -fPIC -Wall
