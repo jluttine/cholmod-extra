@@ -4,9 +4,7 @@ let
 
 in with pkgs; stdenv.mkDerivation rec {
 
-  pname = "cholmod-extra";
-  version = "1.1.0";
-  name = "${pname}-${version}";
+  name = "cholmod-extra";
 
   src = ./.;
 
