@@ -42,17 +42,16 @@
 #include "cholmod_extra.h"
 #include "cholmod_extra_internal.h"
 
-//#include <suitesparse/cholmod_internal.h>
-#include <suitesparse/cholmod_cholesky.h>
+#include <cholmod_cholesky.h>
 
 #define PERM(j) (Lperm != NULL ? Lperm[j] : j)
 
 void CHOLMOD(spinv_block)
 (
-    double *L, 
-    double *Z, 
-    double *V, 
-    Int m, 
+    double *L,
+    double *Z,
+    double *V,
+    Int m,
     Int n,
     cholmod_common *Common
 )
@@ -83,17 +82,17 @@ void CHOLMOD(spinv_block)
             Z1[i+j*ld] = ((i == j) ? 1.0 : 0.0) ;
     }
 
-    if (m2 > 0) 
+    if (m2 > 0)
     {
-        
+
         // Z2 = - V * L2
         // DSYMM(SIDE,UPLO,M,N,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
         BLAS_dsymm("L", // left multiply
                    "L", // in lower triangular form
-                   m2, n, 
+                   m2, n,
                    minus_one,
-                   V, m2, 
-                   L2, ld, 
+                   V, m2,
+                   L2, ld,
                    zero, Z2, ld) ;
 
         // Z1 = -Z2'*L2 + Z1 = -L2'*V*L2 + I
@@ -121,7 +120,7 @@ void CHOLMOD(spinv_block)
 
     // Z = Z / L1
     // DTRSM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
-    BLAS_dtrsm("R", // divide from right 
+    BLAS_dtrsm("R", // divide from right
                "L", // lower triangular
                "N", // no transpose
                "N", // not unit diagonal
@@ -161,8 +160,8 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
     Int n, il, jl, kl, ix, jx, kx, ip, jp;
     size_t nz, nsuper, maxsize;
 
-    /* 
-     * Compute the sparse inverse. 
+    /*
+     * Compute the sparse inverse.
      */
 
     // Dimensionality of the matrix
@@ -227,20 +226,20 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
                 nz++ ;
             }
         }
-        
+
     }
     Xi = realloc(Xi, nz*sizeof(Int)) ;
     Xx = realloc(Xx, nz*sizeof(double)) ;
     X->i = Xi ;
     X->x = Xx ;
     X->nzmax = nz ;
-    
+
     /* Compute column pointers by computing cumulative sum */
     for (jx = 1; jx <= n; jx++)
         Xp[jx] += Xp[jx-1] ;
 
-    /* 
-     * Add row indices and compute permutation mapping 
+    /*
+     * Add row indices and compute permutation mapping
      */
     ncol = (Int*)calloc(n, sizeof(Int)) ;
     perm = malloc(L->xsize*sizeof(Int)) ; // permutation mapping
@@ -265,7 +264,7 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
                 ix = MAX(ip,jp) ;      // row of X
                 kx = Xp[jx]+ncol[jx] ; // index of X
                 // Increase the number of elements on the column
-                ncol[jx]++ ; 
+                ncol[jx]++ ;
                 // Add row index
                 Xi[kx] = ix ;
                 // Mapping X[perm[k]] ~ L[k]
@@ -274,13 +273,13 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
                 perm[kl] = kx ;
             }
         }
-        
+
     }
     free(ncol) ;
     X->sorted = FALSE ;
 
-    /* 
-     * Allocate workspace using the size of the largest supernode 
+    /*
+     * Allocate workspace using the size of the largest supernode
      */
     maxsize = 0 ;
     for (s = 0; s < L->nsuper; s++)
@@ -317,14 +316,14 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
         /*
          * Collect V (symmetric in lower triangular form)
          */
-        scol = s + 1 ; 
+        scol = s + 1 ;
         for (j = 0; j < m2; j++)
         {
             // Row index of the j:th non-zero
             // element in L2
             // = relevant column index of X
             jx = Ls[psi0+m1+j] ;
-            
+
             // Find supernode containing the column jx
             while (Super[scol+1]-1 < jx)
                 scol++ ;
@@ -340,7 +339,7 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
                 // Find L[ix,jx]
                 while (Ls[Lpi[scol]+il] < ix)
                     il++ ;
-                
+
                 // To summarize the finding:
                 // L[ix,jx] is the element (il,jl) in supernode scol
                 kl = Lpx[scol] + il + jl*(Lpi[scol+1]-Lpi[scol]) ;
@@ -348,18 +347,18 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
                 // Use the permutation mapping to get the
                 // index of the corresponding element in X
                 kx = perm[kl] ;
-                                
+
                 // Set V[i,j] = X[ix,jx]
                 V[i+j*m2] = Xx[kx] ;
             }
-                            
+
         }
 
         /*
          * Compute the inverse of the supernode block
          */
         CHOLMOD(spinv_block) (Lx + Lpx[s], Z, V, ms, ns, Common) ;
-        
+
         /*
          * Store the result Z = [Z1; Z2] in X
          */
@@ -368,7 +367,7 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
             for (i = j; i < m1; i++)
             {
                 // Index of the corresponding element L[kl] ~ Z[i,j]
-                kl = Lpx[s] + i + j*ms ; 
+                kl = Lpx[s] + i + j*ms ;
                 // Mapping X[perm[kl]] ~ L[kl]
                 kx = perm[kl] ;
                 // Set the value (try to stabilize by utilizing
@@ -378,7 +377,7 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
             for (i = m1; i < ms; i++)
             {
                 // Index of the corresponding element L[kl] ~ Z[i,j]
-                kl = Lpx[s] + i + j*ms ; 
+                kl = Lpx[s] + i + j*ms ;
                 // Mapping X[perm[kl]] ~ L[kl]
                 kx = perm[kl] ;
                 // Set the value
@@ -387,7 +386,7 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
         }
 
     }
-            
+
     // Free workspace
     free(Z) ;
     free(V) ;
@@ -401,7 +400,7 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
 
         // Sort columns (is it necessary?)
         CHOLMOD(sort) (X, Common) ;
-    
+
         if (Common->status == CHOLMOD_OK)
             return (X) ;
     }
@@ -493,7 +492,7 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
             Xp[jx+1]++ ;
         }
     }
-    
+
     /* Compute column pointers by computing cumulative sum */
     maxsize = 0 ;
     for (jx = 1; jx <= n; jx++)
@@ -518,7 +517,7 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
             ix = MAX(ip,jp) ;      // row of X
             kx = Xp[jx]+ncol[jx] ; // index of X
             // Increase elements on the column
-            ncol[jx]++ ; 
+            ncol[jx]++ ;
             // Add row index
             Xi[kx] = ix ;
             // Mapping X[perm[i]] ~ L[i]
@@ -531,7 +530,7 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
     // Allocate memory for a temporary matrix and vector
     z = malloc((maxsize+1)*sizeof(double)) ;
     V = malloc((maxsize*maxsize)*sizeof(double)) ;
-                            
+
     if (L->is_ll)
     {
 
@@ -560,7 +559,7 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
 
             for (jl = n-1; jl >= 0; jl--)
             {
-                // Indices of non-zero elements in j-th column 
+                // Indices of non-zero elements in j-th column
                 kmin = Lp[jl];         // first index
                 kmax = Lp[jl+1] - 1;   // last index
                 nj = kmax - kmin; // number of non-zero elements (without diagonal)
@@ -593,11 +592,11 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
                             // Find X[row,jx]
                             while (Li[kx] < ix)
                                 kx++ ;
-                                
+
                             // Set Z[iz,jz] = X[ix,jx]
                             V[iz+jz*nj] = Xx[perm[kx]] ;
                         }
-                            
+
                     }
 
                     // DSYMV(UPLO,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
@@ -647,7 +646,7 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
 
         // Sort columns (is it necessary?)
         CHOLMOD(sort) (X, Common) ;
-    
+
         if (Common->status == CHOLMOD_OK)
             return (X) ;
     }
@@ -682,8 +681,8 @@ cholmod_sparse *CHOLMOD(spinv)    /* returns the sparse solution X */
     RETURN_IF_XTYPE_INVALID (L, CHOLMOD_REAL, CHOLMOD_ZOMPLEX, NULL) ;
     Common->status = CHOLMOD_OK ;
 
-    /* 
-     * Compute the sparse inverse. 
+    /*
+     * Compute the sparse inverse.
      */
     if (L->is_super)
     {
@@ -694,6 +693,3 @@ cholmod_sparse *CHOLMOD(spinv)    /* returns the sparse solution X */
         return CHOLMOD(spinv_simplicial) (L, Common) ;
     }
 }
-
-
-

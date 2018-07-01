@@ -39,8 +39,6 @@
 #ifndef CHOLMOD_EXTRA_INTERNAL_H
 #define CHOLMOD_EXTRA_INTERNAL_H
 
-#include <suitesparse/cholmod_internal.h>
-
 #ifdef SUN64
 
 #define BLAS_DSYR2K dsyr2k_64_
@@ -120,7 +118,7 @@ void BLAS_DSYMV (char *uplo, BLAS_INT *m, double *alpha,
 }
 
 // DDOT(N,DX,INCX,DY,INCY)
-double BLAS_DDOT (BLAS_INT *n, double *X, BLAS_INT *incx, 
+double BLAS_DDOT (BLAS_INT *n, double *X, BLAS_INT *incx,
                   double *Y, BLAS_INT *incy) ;
 #define BLAS_ddot(n,X,incx,Y,incy,z)             \
 { \

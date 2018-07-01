@@ -7,8 +7,7 @@
  */
 
 #include "cholmod_extra.h"
-#include <suitesparse/cholmod.h>
-#include <suitesparse/cholmod_internal.h>
+#include <cholmod.h>
 #include <math.h>
 
 #include <stdio.h>
@@ -47,7 +46,7 @@ int main(void)
     }
 
     // Make the matrix sparse
-    K = cholmod_dense_to_sparse(A, TRUE, &Common) ;
+    K = cholmod_dense_to_sparse(A, 1, &Common) ;
     K->stype = 1 ; // NEED TO MAKE THE MATRIX SYMMETRIC
 
     // Identity matrix
