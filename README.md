@@ -3,7 +3,7 @@
 CHOLMOD Extra Module provides a set of additional routines for SuiteSparse CHOLMOD Module http://www.cise.ufl.edu/research/sparse/cholmod/.
 
 Project home page is located at https://github.com/jluttine/cholmod-extra .
- 
+
 GIT repository can be found at https://github.com/jluttine/cholmod-extra.git .
 
 ## Documentation
@@ -20,9 +20,18 @@ Jaakko Luttinen jaakko.luttinen@iki.fi
 
 ## License
 
+### All files except `Include/cholmod_internal.h`
+
 Copyright (C) 2012 Jaakko Luttinen
 
-CHOLMOD Extra Module is licensed under Version 2 of the GNU General Public License, or at your option any later version. See LICENSE for a text of the license.
+Licensed under the GNU General Public License as published by the Free Software
+Foundation; either version 2, or (at your option) any later version. See LICENSE
+for a text of the license.
 
-Licenses for proprietary purpose may be asked from the author.
+### `Include/cholmod_internal.h`
 
+Copyright (C) 2005-2013 University of Florida
+
+Licensed under the GNU Lesser General Public License as published by the Free
+Software Foundation; either version 2.1 of the License, or (at your option) any
+later version.

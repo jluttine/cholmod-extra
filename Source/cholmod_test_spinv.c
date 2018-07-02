@@ -85,7 +85,7 @@ int main(void)
     cholmod_factor *L ;
     cholmod_common Common ;
     clock_t start, end;
-     double cpu_time_used;
+    double cpu_time_used;
 
     // Start using CHOLMOD
     cholmod_start(&Common) ;

@@ -39,6 +39,8 @@
 #ifndef CHOLMOD_EXTRA_INTERNAL_H
 #define CHOLMOD_EXTRA_INTERNAL_H
 
+#include <assert.h>
+
 #ifdef SUN64
 
 #define BLAS_DSYR2K dsyr2k_64_
@@ -61,6 +63,10 @@
 #define BLAS_DDOT ddot_
 
 #endif
+
+#include <cholmod_blas.h>
+#include <cholmod_complexity.h>
+#include "cholmod_internal.h"
 
 // DSYR2K(UPLO,TRANS,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
 void BLAS_DSYR2K (char *uplo, char *trans, BLAS_INT *n, BLAS_INT *k, double *alpha,
