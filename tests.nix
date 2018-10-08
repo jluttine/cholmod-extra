@@ -2,23 +2,24 @@ let
 
   pkgs = import <nixpkgs> {};
 
+  cholmodExtra = import ./default.nix;
+
 in with pkgs; stdenv.mkDerivation rec {
 
-  name = "cholmod-extra";
+  name = "cholmod-extra-tests";
 
   src = ./.;
 
-  buildInputs = [ suitesparse gfortran openblas ];
-
   buildPhase = ''
-    make library
+    make tests
   '';
 
   installPhase = ''
-    mkdir -p $out/lib
-    mkdir -p $out/include
-    make install INSTALL_LIB=$out/lib INSTALL_INCLUDE=$out/include
+    mkdir -p $out/bin
+    cp Build/cholmod_test_spinv $out/bin
   '';
+
+  buildInputs = [ suitesparse gfortran cholmodExtra openblas gdb ];
 
   meta = with stdenv.lib; {
     homepage = https://github.com/jluttine/cholmod-extra;
