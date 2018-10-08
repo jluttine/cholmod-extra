@@ -5,15 +5,12 @@
 VERSION = 1.1.0
 
 # C and C++ compiler flags.  The first three are standard for *.c and *.cpp
-CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O3 -fexceptions -fPIC -Wall
+CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -fexceptions -fPIC -Wall -g
 
 # copy, delete, and rename a file
 CP = cp -f
 MV = mv -f
 RM = rm -rf
-
-# C and Fortran libraries
-LIB = -lcholmod #-lm
 
 # For "make install"
 PREFIX = $(HOME)
@@ -52,8 +49,7 @@ clean:
 # All include files:
 #-------------------------------------------------------------------------------
 
-INC =   Include/cholmod_extra.h \
-	Include/cholmod_extra_internal.h
+INC =   Include/cholmod_extra.h
 
 I = -I Include/
 
@@ -77,7 +73,7 @@ DL = $(LEXTRA)
 
 # to compile just the double/int version, use OBJ = $(DI)
 OBJ = $(DI) $(DL)
-LIBFLAGS = -shared
+LIBFLAGS = -shared -lcholmod -lopenblas -lm
 
 Build/libcholmod-extra.so: $(OBJ)
 	$(C) $(LIBFLAGS) -o  $@ $^
@@ -114,7 +110,7 @@ uninstall:
 
 # Compile tests
 tests: library
-	$(C) $(I) Source/cholmod_test_spinv.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -o Build/cholmod_test_spinv
+	$(C) $(I) Source/cholmod_test_spinv.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -lopenblas -lm -o Build/cholmod_test_spinv
 
 issues: library
-	$(C) $(I) Source/issue1.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -o Build/issue1
+	$(C) $(I) Source/issue1.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -lopenblas -lm -o Build/issue1

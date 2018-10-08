@@ -40,8 +40,9 @@
  * -------------------------------------------------------------------------- */
 
 #include "cholmod_extra.h"
-#include "cholmod_extra_internal.h"
+#include "cholmod_internal.h"
 
+#include <cblas.h>
 #include <cholmod_cholesky.h>
 
 #define PERM(j) (Lperm != NULL ? Lperm[j] : j)
@@ -56,10 +57,6 @@ void CHOLMOD(spinv_block)
     cholmod_common *Common
 )
 {
-    double zero[2]      = {0.0, 0.0} ;
-    double one[2]       = {1.0, 0.0} ;
-    double minus_one[2] = {-1.0, 0.0} ;
-    //double minus_half[2] = {-0.5, 0.0} ;
     double *L1, *L2 ;
     double *Z1, *Z2 ;
     Int i, j ;
@@ -86,48 +83,77 @@ void CHOLMOD(spinv_block)
     {
 
         // Z2 = - V * L2
-        // DSYMM(SIDE,UPLO,M,N,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
-        BLAS_dsymm("L", // left multiply
-                   "L", // in lower triangular form
-                   m2, n,
-                   minus_one,
-                   V, m2,
-                   L2, ld,
-                   zero, Z2, ld) ;
+        cblas_dsymm
+          (
+           CblasColMajor,       // const enum CBLAS_ORDER Order,
+           CblasLeft,           // const enum CBLAS_SIDE Side,
+           CblasLower,          // const enum CBLAS_UPLO Uplo,
+           m2,                  // const int M,
+           n,                   // const int N,
+           -1.0,                // const double alpha,
+           V,                   // const double *A,
+           m2,                  // const int lda,
+           L2,                  // const double *B,
+           ld,                  // const int ldb,
+           0.0,                 // const double beta,
+           Z2,                  // double *C,
+           ld                   // const int ldc
+           ) ;
 
         // Z1 = -Z2'*L2 + Z1 = -L2'*V*L2 + I
-        // DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
-        BLAS_dgemm("T", // transpose Z2
-                   "N", // no transpose for L2
-                   m1, m1, m2,
-                   minus_one,
-                   Z2, ld,
-                   L2, ld,
-                   one, Z1, ld) ;
+        cblas_dgemm
+          (
+           CblasColMajor, // const enum CBLAS_ORDER Order
+           CblasTrans,    // const enum CBLAS_TRANSPOSE TransA
+           CblasNoTrans,  // const enum CBLAS_TRANSPOSE TransB
+           m1,            // const int M
+           m1,            // const int N
+           m2,            // const int K
+           -1.0,          // const double alpha
+           Z2,            // const double *A
+           ld,            // const int lda
+           L2,            // const double *B
+           ld,            // const int ldb
+           1.0,           // const double beta
+           Z1,            // double *C
+           ld             // const int ldc
+           ) ;
 
     }
 
     // Z1 = L1' \ Z1
-    // DTRSM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
-    BLAS_dtrsm("L", // divide from left
-               "L", // lower triangular
-               "T", // transpose
-               "N", // not unit diagonal
-               m1, m1,
-               one,
-               L1, ld,
-               Z1, ld) ;
+    cblas_dtrsm
+      (
+       CblasColMajor, // const enum CBLAS_ORDER Order
+       CblasLeft,     // const enum CBLAS_SIDE Side
+       CblasLower,    // const enum CBLAS_UPLO Uplo
+       CblasTrans,    // const enum CBLAS_TRANSPOSE TransA
+       CblasNonUnit,  // const enum CBLAS_DIAG Diag
+       m1,            // const int M
+       m1,            // const int N
+       1.0,           // const double alpha
+       L1,            // const double *A
+       ld,            // const int lda
+       Z1,            // double *B
+       ld             // const int ldb
+       ) ;
 
     // Z = Z / L1
-    // DTRSM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
-    BLAS_dtrsm("R", // divide from right
-               "L", // lower triangular
-               "N", // no transpose
-               "N", // not unit diagonal
-               m, n,
-               one,
-               L1, ld,
-               Z, ld) ;
+    cblas_dtrsm
+      (
+       CblasColMajor, // const enum CBLAS_ORDER Order
+       CblasRight,    // const enum CBLAS_SIDE Side
+       CblasLower,    // const enum CBLAS_UPLO Uplo
+       CblasNoTrans,  // const enum CBLAS_TRANSPOSE TransA
+       CblasNonUnit,  // const enum CBLAS_DIAG Diag
+       m,             // const int M
+       n,             // const int N
+       1.0,           // const double alpha
+       L1,            // const double *A
+       ld,            // const int lda
+       Z,             // double *B
+       ld             // const int ldb
+       ) ;
 
 }
 
@@ -154,7 +180,7 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
     Int ms, ns, m1, m2, scol ;
     int xtype;
     cholmod_sparse *X ;
-    double *Lx, *Xx, *Xz, *Z, *V ; //, *Z1, *Z2, *L1, *L2 ;
+    double *Lx, *Xx, *Z, *V ; //, *Z1, *Z2, *L1, *L2 ;
     Int  *Xp, *Xi;
     Int *perm, *Lperm, *ncol;
     Int n, il, jl, kl, ix, jx, kx, ip, jp;
@@ -185,7 +211,6 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
     Xp = X->p ;
     Xi = X->i ;
     Xx = X->x ;
-    Xz = X->z ;
     Super = L->super ;
     Lpi = L->pi ;
     Lpx = L->px ;
@@ -424,22 +449,12 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
 
     int xtype ;
     cholmod_sparse *X ;
-    double *Lx, *Lz, *Xx, *Xz, *V, *z, *Lxj ;
+    double *Lx, *Xx, *V, *z, *Lxj ;
     double djj ;
     Int *Li, *Lp, *Xp, *Xi ;
     Int *perm, *Lperm, *ncol ;
     Int n, kmin, kmax, nj, iz, jz, il, jl, kl, ix, jx, kx, ip, jp ;
     size_t nz, maxsize ;
-//*
-    double minus_one[2], one[2], zero[2] ;
-    minus_one[0] = -1.0 ;
-    minus_one[1] = 0.0 ;
-    one[0] = 1.0 ;
-    one[1] = 0.0 ;
-    zero[0] = 0.0 ;
-    zero[1] = 0.0 ;
-//*/
-
 
     // Dimensionality of the matrix
     n = L->n ;
@@ -462,11 +477,9 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
     Xp = X->p ;
     Xi = X->i ;
     Xx = X->x ;
-    Xz = X->z ;
     Lp = L->p ;
     Li = L->i ;
     Lx = L->x ;
-    Lz = L->z ;
     Lperm = L->Perm ;
 
     V = NULL ;
@@ -599,8 +612,20 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
 
                     }
 
-                    // DSYMV(UPLO,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
-                    BLAS_dsymv("L", nj, one, V, nj, Lxj, 1, zero, z, 1) ;
+                    cblas_dsymv
+                      (
+                       CblasColMajor, // const enum CBLAS_ORDER order
+                       CblasLower,    // const enum CBLAS_UPLO Uplo
+                       nj,            // const int N
+                       1.0,           // const double alpha
+                       V,             // const double *A
+                       nj,            // const int lda
+                       Lxj,           // const double *X
+                       1,             // const int incX
+                       0.0,           // const double beta
+                       z,             // double *Y
+                       1              // const int incY
+                       ) ;
 
                     // Copy the result to the lower part of X
                     for (iz = 0; iz < nj; iz++)
@@ -610,9 +635,14 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
                     }
 
                     // Compute the diagonal element X[j,j]
-                    // DDOT(N,DX,INCX,DY,INCY)
-                    BLAS_ddot(nj, z, 1, Lxj, 1, Xx[perm[kmin]]) ;
-                    Xx[perm[kmin]] += 1.0/djj ;
+                    Xx[perm[kmin]] = 1.0/djj + cblas_ddot
+                      (
+                       nj,  // const int N
+                       z,   // const double *X
+                       1,   // const int incX
+                       Lxj, // const double *Y
+                       1    // const int incY
+                       ) ;
 
                 }
                 else
