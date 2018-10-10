@@ -2,7 +2,7 @@
 # Makefile: for compiling the CHOLMOD-EXTRA library
 #===============================================================================
 
-VERSION = 1.1.0
+VERSION = 1.2.0
 
 OPTIMIZATION = -O3
 
