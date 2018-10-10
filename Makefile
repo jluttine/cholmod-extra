@@ -4,8 +4,10 @@
 
 VERSION = 1.1.0
 
+OPTIMIZATION = -O3
+
 # C and C++ compiler flags.  The first three are standard for *.c and *.cpp
-CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -fexceptions -fPIC -Wall -g
+CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -fexceptions -fPIC -Wall $(OPTIMIZATION)
 
 # copy, delete, and rename a file
 CP = cp -f
