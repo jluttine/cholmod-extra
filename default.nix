@@ -10,15 +10,16 @@ in with pkgs; stdenv.mkDerivation rec {
 
   buildInputs = [ suitesparse gfortran openblas ];
 
-  buildPhase = ''
-    make library
-  '';
+  buildFlags = [
+    "BLAS=-lopenblas"
+  ];
 
-  installPhase = ''
-    mkdir -p $out/lib
-    mkdir -p $out/include
-    make install INSTALL_LIB=$out/lib INSTALL_INCLUDE=$out/include
-  '';
+  installFlags = [
+    "INSTALL_LIB=$(out)/lib"
+    "INSTALL_INCLUDE=$(out)/include"
+  ];
+
+  doCheck = true;
 
   meta = with stdenv.lib; {
     homepage = https://github.com/jluttine/cholmod-extra;
