@@ -101,6 +101,8 @@ Build:
 
 # install CHOLMOD Extra
 install:
+	mkdir -p $(INSTALL_LIB)
+	mkdir -p $(INSTALL_INCLUDE)
 	$(CP) Build/libcholmod-extra.so $(INSTALL_LIB)/libcholmod-extra.so.$(VERSION)
 	( cd $(INSTALL_LIB) ; ln -sf libcholmod-extra.so.$(VERSION) libcholmod-extra.so )
 	$(CP) Include/cholmod_extra*.h $(INSTALL_INCLUDE)
