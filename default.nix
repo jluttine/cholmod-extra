@@ -1,8 +1,11 @@
 let
-
   pkgs = import <nixpkgs> {};
-
-in with pkgs; stdenv.mkDerivation rec {
+in with pkgs; let
+  suitesparse_ = suitesparse;
+in let
+  # SuiteSparse must use the same openblas
+  suitesparse = suitesparse_.override { inherit openblas; };
+in stdenv.mkDerivation rec {
 
   name = "cholmod-extra";
 
