@@ -18,7 +18,7 @@ RM = rm -rf
 PREFIX = $(HOME)
 #PREFIX = /usr/local
 INSTALL_LIB = $(PREFIX)/lib
-INSTALL_INCLUDE = $(PREFIX)/include/suitesparse
+INSTALL_INCLUDE = $(PREFIX)/include/cholmod-extra
 
 # Which version of MAKE you are using (default is "make")
 # MAKE = make
