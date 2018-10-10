@@ -87,6 +87,8 @@ int main(void)
     clock_t start, end;
     double cpu_time_used;
 
+    printf("RUNNING TESTS FOR CHOLMOD-EXTRA...\n") ;
+
     // Start using CHOLMOD
     cholmod_start(&Common) ;
 
@@ -138,6 +140,12 @@ int main(void)
     // Compute error
     error = compute_error(invK, spinvK, A) ;
     printf("Error for simplicial: %g (CPU-time: %g)\n", error, cpu_time_used) ;
+    if (error > 1e-14)
+      {
+        printf("FAILED: Error too large\n") ;
+        return -1;
+      }
+    printf("PASSED.\n");
 
     /* SUPERNODAL */
 
@@ -157,6 +165,12 @@ int main(void)
     // Compute error
     error = compute_error(invK, spinvK, A) ;
     printf("Error for supernodal: %g (CPU-time: %g)\n", error, cpu_time_used) ;
+    if (error > 1e-14)
+      {
+        printf("FAILED: Error too large\n") ;
+        return -1;
+      }
+    printf("PASSED.\n");
 
     /* CLEANUP */
 

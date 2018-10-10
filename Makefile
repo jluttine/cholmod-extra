@@ -120,3 +120,6 @@ tests: library
 
 issues: library
 	$(C) $(I) Source/issue1.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -lm $(BLAS) -o Build/issue1
+
+check: tests
+	LD_LIBRARY_PATH=Build/ Build/cholmod_test_spinv
