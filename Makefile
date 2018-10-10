@@ -20,6 +20,8 @@ PREFIX = $(HOME)
 INSTALL_LIB = $(PREFIX)/lib
 INSTALL_INCLUDE = $(PREFIX)/include/cholmod-extra
 
+BLAS = -lopenblas
+
 # Which version of MAKE you are using (default is "make")
 # MAKE = make
 # MAKE = gmake
@@ -75,7 +77,7 @@ DL = $(LEXTRA)
 
 # to compile just the double/int version, use OBJ = $(DI)
 OBJ = $(DI) $(DL)
-LIBFLAGS = -shared -lcholmod -lopenblas -lm
+LIBFLAGS = -shared -lcholmod -lm $(BLAS)
 
 Build/libcholmod-extra.so: $(OBJ)
 	$(C) $(LIBFLAGS) -o  $@ $^
@@ -112,7 +114,7 @@ uninstall:
 
 # Compile tests
 tests: library
-	$(C) $(I) Source/cholmod_test_spinv.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -lopenblas -lm -o Build/cholmod_test_spinv
+	$(C) $(I) Source/cholmod_test_spinv.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -lm $(BLAS) -o Build/cholmod_test_spinv
 
 issues: library
-	$(C) $(I) Source/issue1.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -lopenblas -lm -o Build/issue1
+	$(C) $(I) Source/issue1.c -Wl,-rpath,. -LBuild -lcholmod-extra -lcholmod -lm $(BLAS) -o Build/issue1
