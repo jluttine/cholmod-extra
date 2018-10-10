@@ -17,16 +17,12 @@
 int main(void)
 {
     int N = 2 ;
-    int i, j, n ;
-    int nz = 0;
+    int n ;
     double *Ax ;
-    double x, error ;
-    cholmod_dense *A, *invK, *spinvK, *I ;
+    cholmod_dense *A, *invK, *I ;
     cholmod_sparse *K, *V ;
     cholmod_factor *L ;
     cholmod_common Common,*cm ;
-    clock_t start, end;
-    double cpu_time_used;
     cm=&Common;
     // Start using CHOLMOD
     cholmod_start(cm) ;
@@ -36,7 +32,6 @@ int main(void)
     // Generate random symmetric positive (semi)definite matrix
     A = cholmod_zeros(N, N, CHOLMOD_REAL, &Common) ;
     Ax =(double*) A->x ;
-    nz = N ;
 
     // Make positive-definite by adding something positive to the
     // diagonal
@@ -61,10 +56,7 @@ int main(void)
     invK = cholmod_solve(CHOLMOD_A, L, I, &Common) ;
 
     // Compute the sparse inverse and the full inverse
-    start = clock();
     V = cholmod_spinv(L, &Common) ;
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
     // Show results
     cholmod_print_sparse(K,"Original",&Common) ;
