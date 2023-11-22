@@ -199,18 +199,19 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
     // Result has the same xtype as the factor
     xtype = L->xtype ;
 
+    perm = NULL ;
+    ncol = NULL ;
+    V = NULL ;
+    Z = NULL ;
+    maxsize = 0 ;
+
     // Allocate the result X
     X = CHOLMOD(spzeros) (n, n, 0, xtype, Common) ;
     if (Common->status < CHOLMOD_OK)
-    {
-        CHOLMOD(free_sparse) (&X, Common) ;
-        return (NULL) ;
-    }
+        goto cleanup ;
 
     // Shorthand notation
     Xp = X->p ;
-    Xi = X->i ;
-    Xx = X->x ;
     Super = L->super ;
     Lpi = L->pi ;
     Lpx = L->px ;
@@ -253,11 +254,13 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
         }
 
     }
-    Xi = realloc(Xi, nz*sizeof(Int)) ;
-    Xx = realloc(Xx, nz*sizeof(double)) ;
-    X->i = Xi ;
-    X->x = Xx ;
-    X->nzmax = nz ;
+    CHOLMOD(reallocate_sparse)(nz, X, Common) ;
+    if (Common->status < CHOLMOD_OK)
+      goto cleanup ;
+
+    Xp = X->p ;
+    Xi = X->i ;
+    Xx = X->x ;
 
     /* Compute column pointers by computing cumulative sum */
     for (jx = 1; jx <= n; jx++)
@@ -266,8 +269,11 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
     /*
      * Add row indices and compute permutation mapping
      */
-    ncol = (Int*)calloc(n, sizeof(Int)) ;
-    perm = malloc(L->xsize*sizeof(Int)) ; // permutation mapping
+    ncol = (Int*)CHOLMOD(calloc)(n, sizeof(Int), Common) ;
+    perm = CHOLMOD(malloc)(L->xsize, sizeof(Int), Common) ; // permutation mapping
+    if (Common->status < CHOLMOD_OK)
+      goto cleanup ;
+
     for (s = 0; s < nsuper; s++)
     {
         j0 = Super[s] ;   // first column of the supernode
@@ -300,20 +306,21 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
         }
 
     }
-    free(ncol) ;
+    ncol = CHOLMOD(free)(n, sizeof(Int), ncol, Common) ;
     X->sorted = FALSE ;
 
     /*
      * Allocate workspace using the size of the largest supernode
      */
-    maxsize = 0 ;
     for (s = 0; s < L->nsuper; s++)
     {
         if (Lpx[s+1] - Lpx[s] > maxsize)
             maxsize = Lpx[s+1] - Lpx[s] ;
     }
-    V = malloc(L->maxesize*L->maxesize*sizeof(double)) ;
-    Z = malloc(maxsize*sizeof(double)) ;
+    V = CHOLMOD(malloc)(L->maxesize*L->maxesize, sizeof(double), Common) ;
+    Z = CHOLMOD(malloc)(maxsize, sizeof(double), Common) ;
+    if (Common->status < CHOLMOD_OK)
+      goto cleanup ;
 
     /*
      * Compute the sparse inverse
@@ -412,10 +419,12 @@ cholmod_sparse *CHOLMOD(spinv_super)   /* returns the sparse inverse of X */
 
     }
 
+cleanup:
     // Free workspace
-    free(Z) ;
-    free(V) ;
-    free(perm) ;
+    CHOLMOD(free)(maxsize, sizeof(double), Z, Common) ;
+    CHOLMOD(free)(L->maxesize*L->maxesize, sizeof(double), V, Common) ;
+    CHOLMOD(free)(L->xsize, sizeof(Int), perm, Common) ;
+    CHOLMOD(free)(n, sizeof(Int), ncol, Common) ;
 
     if (Common->status >= CHOLMOD_OK)
     {
@@ -465,13 +474,17 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
     // Result has the same xtype as the factor
     xtype = L->xtype ;
 
+    V = NULL ;
+    z = NULL ;
+    perm = NULL ;
+    ncol = NULL ;
+    maxsize = 0 ;
+
+
     // Allocate the result X
     X = CHOLMOD(spzeros) (n, n, nz, xtype, Common) ;
     if (Common->status < CHOLMOD_OK)
-    {
-        CHOLMOD(free_sparse) (&X, Common) ;
-        return (NULL) ;
-    }
+      goto cleanup ;
 
     // Shorthand notation
     Xp = X->p ;
@@ -482,8 +495,6 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
     Lx = L->x ;
     Lperm = L->Perm ;
 
-    V = NULL ;
-    z = NULL ;
     Lxj = NULL ;
 
     /*
@@ -507,7 +518,6 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
     }
 
     /* Compute column pointers by computing cumulative sum */
-    maxsize = 0 ;
     for (jx = 1; jx <= n; jx++)
     {
         if (Xp[jx] > maxsize)
@@ -516,8 +526,10 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
     }
 
     /* Add row indices */
-    ncol = (Int*)calloc(n, sizeof(Int)) ;
-    perm = malloc(nz*sizeof(Int)) ; // permutation mapping
+    ncol = (Int*)CHOLMOD(calloc)(n, sizeof(Int), Common) ;
+    perm = CHOLMOD(malloc)(nz, sizeof(Int), Common) ; // permutation mapping
+    if (Common->status < CHOLMOD_OK)
+      goto cleanup ;
 
     for (jl = 0; jl < n; jl++)
     {
@@ -537,12 +549,14 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
             perm[kl] = kx ;
         }
     }
-    free(ncol) ;
+    ncol = CHOLMOD(free)(n, sizeof(Int), ncol, Common) ;
     X->sorted = FALSE ;
 
     // Allocate memory for a temporary matrix and vector
-    z = malloc((maxsize+1)*sizeof(double)) ;
-    V = malloc((maxsize*maxsize)*sizeof(double)) ;
+    z = CHOLMOD(malloc)(maxsize+1, sizeof(double), Common) ;
+    V = CHOLMOD(malloc)(maxsize*maxsize, sizeof(double), Common) ;
+    if (Common->status < CHOLMOD_OK)
+      goto cleanup ;
 
     if (L->is_ll)
     {
@@ -664,9 +678,11 @@ cholmod_sparse *CHOLMOD(spinv_simplicial)  /* returns the sparse solution X */
 
     }
 
-    free(V) ;
-    free(z) ;
-    free(perm) ;
+cleanup:
+    CHOLMOD(free)(maxsize*maxsize, sizeof(double), V, Common) ;
+    CHOLMOD(free)(maxsize+1, sizeof(double), z, Common) ;
+    CHOLMOD(free)(nz, sizeof(Int), perm, Common) ;
+    CHOLMOD(free)(n, sizeof(Int), ncol, Common) ;
 
     if (Common->status >= CHOLMOD_OK)
     {
